@@ -7,7 +7,11 @@ import com.distraction.cm.game.Grid;
 
 public class PlayState extends State {
 
+    private final int DRAG_DEST = 50;
+
     private Grid grid;
+    private float startx;
+    private float starty;
 
     public PlayState(GSM gsm){
         super(gsm);
@@ -22,7 +26,31 @@ public class PlayState extends State {
 
     @Override
     public void update(float dt) {
-
+        if(Gdx.input.justTouched()) {
+            m.x = Gdx.input.getX();
+            m.y = Gdx.input.getY();
+            cam.unproject(m);
+            grid.click(m.x, m.y);
+            startx = m.x;
+            starty = m.y;
+        }else if(Gdx.input.isTouched()){
+            m.x = Gdx.input.getX();
+            m.y = Gdx.input.getY();
+            cam.unproject(m);
+            if(m.x > startx + DRAG_DEST){
+                grid.move(1, 0);
+            }
+            else if(m.x < startx - DRAG_DEST){
+                grid.move(-1, 0);
+            }
+            else if(m.y > starty + DRAG_DEST){
+                grid.move(0, 1);
+            }
+            else if(m.y < starty - DRAG_DEST){
+                grid.move(0, -1);
+            }
+        }
+        grid.update(dt);
     }
 
     @Override

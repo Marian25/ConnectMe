@@ -6,6 +6,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class Cell {
 
+
+
+
     public enum CellType{
         RED(Color.RED),
         GREEN(Color.GREEN),
@@ -57,6 +60,10 @@ public class Cell {
         float dist = (float)Math.sqrt(dx * dx + dy * dy);
         dx /= dist;
         dy /= dist;
+    }
+
+    public CellType getType(){
+        return cellType;
     }
 
     public boolean contains(float mx, float my){

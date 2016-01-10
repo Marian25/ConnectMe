@@ -5,12 +5,15 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.distraction.cm.CM;
 
-public class Grid{
+import java.util.LinkedList;
+import java.util.Queue;
+
+public class Grid {
 
     public static int PADDING = 20;
     public static int SIZE = CM.WIDTH - PADDING * 2;
 
-    private Color bgcolor = new Color(0,0,0,1);
+    private Color bgcolor = new Color(0, 0, 0, 1);
     private Texture tex;
 
     private Cell[][] grid;
@@ -24,7 +27,7 @@ public class Grid{
     private int clickedCol;
     private Cell clickedCell;
 
-    public Grid(int[][] types){
+    public Grid(int[][] types) {
         numRows = types.length;
         numCols = types[0].length;
         grid = new Cell[numRows][numCols];
@@ -34,8 +37,8 @@ public class Grid{
         x = PADDING;
         y = (CM.HEIGHT - SIZE) / 2;
 
-        for(int row = 0; row < numRows; row++){
-            for (int col = 0; col < numCols; col++){
+        for (int row = 0; row < numRows; row++) {
+            for (int col = 0; col < numCols; col++) {
                 Cell cell = new Cell(
                         types[row][col],
                         x + col * Cell.SIZE,
@@ -46,26 +49,25 @@ public class Grid{
         tex = new Texture("pixel.png");
     }
 
-    public void click(float mx, float my){
-        for(int row = 0; row < numRows; row++) {
+    public void click(float mx, float my) {
+        for (int row = 0; row < numRows; row++) {
             for (int col = 0; col < numCols; col++) {
-                if(grid[row][col].contains(mx, my)){
+                if (grid[row][col].contains(mx, my)) {
                     clickedRow = row;
                     clickedCol = col;
                     clickedCell = grid[row][col];
                     break;
                 }
-
             }
         }
     }
 
-    public void move(int dx, int dy){
-        if(clickedCell == null)
+    public void move(int dx, int dy) {
+        if (clickedCell == null)
             return;
 
-        if(dx > 0){
-            if(clickedCol < numCols - 1){
+        if (dx > 0) {
+            if (clickedCol < numCols - 1) {
                 Cell temp = grid[clickedRow][clickedCol];
                 grid[clickedRow][clickedCol] = grid[clickedRow][clickedCol + 1];
                 grid[clickedRow][clickedCol + 1] = temp;
@@ -76,9 +78,12 @@ public class Grid{
                         x + (clickedCol + 1) * Cell.SIZE,
                         y + (numRows - clickedRow - 1) * Cell.SIZE);
                 clickedCell = null;
+                if (isFinished()) {
+                    System.out.println("finished");
+                }
             }
-        } else if(dx < 0){
-            if(clickedCol > 0){
+        } else if (dx < 0) {
+            if (clickedCol > 0) {
                 Cell temp = grid[clickedRow][clickedCol];
                 grid[clickedRow][clickedCol] = grid[clickedRow][clickedCol - 1];
                 grid[clickedRow][clickedCol - 1] = temp;
@@ -89,22 +94,28 @@ public class Grid{
                         x + (clickedCol - 1) * Cell.SIZE,
                         y + (numRows - clickedRow - 1) * Cell.SIZE);
                 clickedCell = null;
+                if (isFinished()) {
+                    System.out.println("finished");
+                }
             }
-        } else if(dy > 0){
-            if(clickedRow > 0){
+        } else if (dy > 0) {
+            if (clickedRow > 0) {
                 Cell temp = grid[clickedRow][clickedCol];
                 grid[clickedRow][clickedCol] = grid[clickedRow - 1][clickedCol];
                 grid[clickedRow - 1][clickedCol] = temp;
                 grid[clickedRow][clickedCol].setDestination(
                         x + clickedCol * Cell.SIZE,
                         y + (numRows - clickedRow - 1) * Cell.SIZE);
-                grid[clickedRow-1][clickedCol].setDestination(
+                grid[clickedRow - 1][clickedCol].setDestination(
                         x + clickedCol * Cell.SIZE,
                         y + (numRows - clickedRow) * Cell.SIZE);
                 clickedCell = null;
+                if (isFinished()) {
+                    System.out.println("finished");
+                }
             }
-        } else if(dy < 0){
-            if(clickedRow < numRows - 1){
+        } else if (dy < 0) {
+            if (clickedRow < numRows - 1) {
                 Cell temp = grid[clickedRow][clickedCol];
                 grid[clickedRow][clickedCol] = grid[clickedRow + 1][clickedCol];
                 grid[clickedRow + 1][clickedCol] = temp;
@@ -115,6 +126,81 @@ public class Grid{
                         x + clickedCol * Cell.SIZE,
                         y + (numRows - clickedRow - 2) * Cell.SIZE);
                 clickedCell = null;
+                System.out.println("jmecher");
+                if (isFinished()) {
+                    System.out.println("finished");
+                }
+            }
+        }
+    }
+
+    public boolean isFinished() {
+        boolean[][] visited = new boolean[numRows][numCols];
+        boolean[] checkedColors = new boolean[Cell.cellTypeValues.length];
+
+        for (int row = 0; row < numRows; row++) {
+            for (int col = 0; col < numCols; col++) {
+                int type = grid[row][col].getType().ordinal();
+                if (checkedColors[type] && !visited[row][col]) {
+                    return false;
+                }
+                checkedColors[type] = true;
+                bfs(grid, visited, row, col);
+            }
+        }
+        return true;
+    }
+
+    private static class Index {
+        private int row;
+        private int col;
+
+        public Index(int row, int col) {
+            this.row = row;
+            this.col = col;
+        }
+
+        public int getCol() {
+            return col;
+        }
+
+        public int getRow() {
+            return row;
+        }
+    }
+
+    private void bfs(Cell[][] grid, boolean[][] visited, int row, int col) {
+        Queue<Index> queue = new LinkedList<Index>();
+        queue.add(new Index(row, col));
+        visited[row][col] = true;
+        while (!queue.isEmpty()) {
+            Index currentCell = queue.poll();
+            Cell.CellType type = grid[currentCell.row][currentCell.col].getType();
+            row = currentCell.row;
+            col = currentCell.col;
+            if(col > 0) {
+                if(!visited[row][col - 1] && grid[row][col - 1].getType() == type) {
+                    queue.add(new Index(row, col - 1));
+                    visited[row][col - 1] = true;
+                }
+            }
+            if(col < numCols - 1 && grid[row][col + 1].getType() == type) {
+                if(!visited[row][col + 1]) {
+                    queue.add(new Index(row, col + 1));
+                    visited[row][col + 1] = true;
+                }
+            }
+            if(row > 0 && grid[row - 1][col].getType() == type) {
+                if(!visited[row - 1][col]) {
+                    queue.add(new Index(row - 1, col));
+                    visited[row - 1][col] = true;
+                }
+            }
+            if(row < numRows - 1 && grid[row + 1][col].getType() == type) {
+                if(!visited[row + 1][col]) {
+                    queue.add(new Index(row + 1, col));
+                    visited[row + 1][col] = true;
+                }
             }
         }
     }

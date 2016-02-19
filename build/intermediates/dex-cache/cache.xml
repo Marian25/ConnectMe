@@ -2,11 +2,39 @@
 <items version="2" >
 
     <item
-        jar="C:\Users\ASUS\AndroidStudioProjects\connect-me-master\core\build\libs\core-1.0.jar"
+        jar="C:\Users\Marian\.gradle\caches\modules-2\files-2.1\com.badlogicgames.gdx\gdx\1.6.3\f5848caaa3edeedce92361c61c716a1cb33587f\gdx-1.6.3.jar"
+        jumboMode="false"
+        revision="21.0.1"
+        sha1="0f5848caaa3edeedce92361c61c716a1cb33587f">
+        <dex dex="C:\Users\Marian\Dropbox\AndroidStudioProjects\connect-me-master\android\build\intermediates\pre-dexed\debug\gdx-1.6.3_e2294c11a362e734afdd226409e54b00c09eadc0.jar" />
+    </item>
+    <item
+        jar="C:\Users\Marian\Dropbox\AndroidStudioProjects\connect-me-master\core\build\libs\core-1.0.jar"
+        jumboMode="false"
+        revision="21.0.1"
+        sha1="7e960be4aa194be4cde7a1a2946624aeecccff0f">
+        <dex dex="C:\Users\Marian\Dropbox\AndroidStudioProjects\connect-me-master\android\build\intermediates\pre-dexed\debug\core-1.0_a00521734e9ec2b297e7dbbd1b29e4f31b9d6b38.jar" />
+    </item>
+    <item
+        jar="C:\Users\Marian\.gradle\caches\modules-2\files-2.1\com.badlogicgames.gdx\gdx-backend-android\1.6.3\78054a81e63d50b73e0cb00e4ba01bb54f9be94f\gdx-backend-android-1.6.3.jar"
+        jumboMode="false"
+        revision="21.0.1"
+        sha1="78054a81e63d50b73e0cb00e4ba01bb54f9be94f">
+        <dex dex="C:\Users\Marian\Dropbox\AndroidStudioProjects\connect-me-master\android\build\intermediates\pre-dexed\debug\gdx-backend-android-1.6.3_612a5412824115bed85571d470f60b4fb7c342bd.jar" />
+    </item>
+    <item
+        jar="C:\Users\Marian\.gradle\caches\modules-2\files-2.1\com.badlogicgames.gdx\gdx-freetype\1.6.3\7130eb6af322f824c348462295c14d43106f3d1c\gdx-freetype-1.6.3.jar"
+        jumboMode="false"
+        revision="21.0.1"
+        sha1="7130eb6af322f824c348462295c14d43106f3d1c">
+        <dex dex="C:\Users\Marian\Dropbox\AndroidStudioProjects\connect-me-master\android\build\intermediates\pre-dexed\debug\gdx-freetype-1.6.3_8c7cf90bbcb6d2409997ac1b915c98c4b4e4f470.jar" />
+    </item>
+    <item
+        jar="C:\Users\Marian\Dropbox\AndroidStudioProjects\connect-me-master\core\build\libs\core-1.0.jar"
         jumboMode="false"
         revision="23.0.1"
-        sha1="7eeb33302911aec69e6d273294105cc958344ba7">
-        <dex dex="C:\Users\ASUS\AndroidStudioProjects\connect-me-master\android\build\intermediates\pre-dexed\debug\core-1.0-0143834beaad6322340622fe391006c3865eabb5.jar" />
+        sha1="432b06ac19592c82a1d34f7e2aa43e1aee5c1d17">
+        <dex dex="C:\Users\Marian\Dropbox\AndroidStudioProjects\connect-me-master\android\build\intermediates\pre-dexed\debug\core-1.0_a00521734e9ec2b297e7dbbd1b29e4f31b9d6b38.jar" />
     </item>
 
 </items>

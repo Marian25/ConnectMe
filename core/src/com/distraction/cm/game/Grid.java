@@ -3,18 +3,26 @@ package com.distraction.cm.game;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.distraction.cm.CM;
+import com.distraction.cm.ui.Node;
+import com.distraction.cm.util.AnimationListener;
+import com.distraction.cm.util.Content;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Set;
 
-public class Grid {
+public class Grid implements AnimationListener{
 
     public static int PADDING = 20;
-    public static int SIZE = CM.WIDTH - PADDING * 2;
+    public static int WIDTH = CM.WIDTH - PADDING * 2;
+    public static int HEIGHT;
 
-    private Color bgcolor = new Color(0, 0, 0, 1);
-    private Texture tex;
+    private TextureRegion bg;
+    private TextureRegion pixel;
+    private Color checkeredColor = new Color(0, 0, 0, 0.2f);
 
     private Cell[][] grid;
     private int numRows;
@@ -27,15 +35,19 @@ public class Grid {
     private int clickedCol;
     private Cell clickedCell;
 
+    private int numMoves;
+
     public Grid(int[][] types) {
         numRows = types.length;
         numCols = types[0].length;
         grid = new Cell[numRows][numCols];
 
-        Cell.SIZE = SIZE / numCols;
+        Cell.SIZE = WIDTH / numCols;
+        Cell.PADDING = 2 * Cell.SIZE / 14;
+        HEIGHT = numRows * Cell.SIZE;
 
         x = PADDING;
-        y = (CM.HEIGHT - SIZE) / 2;
+        y = (CM.HEIGHT - HEIGHT) / 2;
 
         for (int row = 0; row < numRows; row++) {
             for (int col = 0; col < numCols; col++) {
@@ -43,10 +55,12 @@ public class Grid {
                         types[row][col],
                         x + col * Cell.SIZE,
                         y + (numRows - row - 1) * Cell.SIZE);
+                cell.setListener(this);
                 grid[row][col] = cell;
             }
         }
-        tex = new Texture("pixel.png");
+        bg = Content.getIntance().getAtlas().findRegion("grid_cell");
+        pixel = Content.getIntance().getAtlas().findRegion("pixel");
     }
 
     public void click(float mx, float my) {
@@ -63,6 +77,9 @@ public class Grid {
     }
 
     public void move(int dx, int dy) {
+        if(animationCount > 0)
+            return;
+
         if (clickedCell == null)
             return;
 
@@ -78,7 +95,9 @@ public class Grid {
                         x + (clickedCol + 1) * Cell.SIZE,
                         y + (numRows - clickedRow - 1) * Cell.SIZE);
                 clickedCell = null;
-                if (isFinished()) {
+                numMoves++;
+                if(isFinished()){
+                    System.out.println("numMoves: " + numMoves);
                     System.out.println("finished");
                 }
             }
@@ -94,7 +113,9 @@ public class Grid {
                         x + (clickedCol - 1) * Cell.SIZE,
                         y + (numRows - clickedRow - 1) * Cell.SIZE);
                 clickedCell = null;
-                if (isFinished()) {
+                numMoves++;
+                if(isFinished()){
+                    System.out.println("numMoves: " + numMoves);
                     System.out.println("finished");
                 }
             }
@@ -110,7 +131,9 @@ public class Grid {
                         x + clickedCol * Cell.SIZE,
                         y + (numRows - clickedRow) * Cell.SIZE);
                 clickedCell = null;
-                if (isFinished()) {
+                numMoves++;
+                if(isFinished()){
+                    System.out.println("numMoves: " + numMoves);
                     System.out.println("finished");
                 }
             }
@@ -126,8 +149,9 @@ public class Grid {
                         x + clickedCol * Cell.SIZE,
                         y + (numRows - clickedRow - 2) * Cell.SIZE);
                 clickedCell = null;
-                System.out.println("jmecher");
-                if (isFinished()) {
+                numMoves++;
+                if(isFinished()){
+                    System.out.println("numMoves: " + numMoves);
                     System.out.println("finished");
                 }
             }
@@ -159,14 +183,6 @@ public class Grid {
             this.row = row;
             this.col = col;
         }
-
-        public int getCol() {
-            return col;
-        }
-
-        public int getRow() {
-            return row;
-        }
     }
 
     private void bfs(Cell[][] grid, boolean[][] visited, int row, int col) {
@@ -178,26 +194,26 @@ public class Grid {
             Cell.CellType type = grid[currentCell.row][currentCell.col].getType();
             row = currentCell.row;
             col = currentCell.col;
-            if(col > 0) {
-                if(!visited[row][col - 1] && grid[row][col - 1].getType() == type) {
+            if (col > 0) {
+                if (!visited[row][col - 1] && grid[row][col - 1].getType() == type) {
                     queue.add(new Index(row, col - 1));
                     visited[row][col - 1] = true;
                 }
             }
-            if(col < numCols - 1 && grid[row][col + 1].getType() == type) {
-                if(!visited[row][col + 1]) {
+            if (col < numCols - 1 && grid[row][col + 1].getType() == type) {
+                if (!visited[row][col + 1]) {
                     queue.add(new Index(row, col + 1));
                     visited[row][col + 1] = true;
                 }
             }
-            if(row > 0 && grid[row - 1][col].getType() == type) {
-                if(!visited[row - 1][col]) {
+            if (row > 0 && grid[row - 1][col].getType() == type) {
+                if (!visited[row - 1][col]) {
                     queue.add(new Index(row - 1, col));
                     visited[row - 1][col] = true;
                 }
             }
-            if(row < numRows - 1 && grid[row + 1][col].getType() == type) {
-                if(!visited[row + 1][col]) {
+            if (row < numRows - 1 && grid[row + 1][col].getType() == type) {
+                if (!visited[row + 1][col]) {
                     queue.add(new Index(row + 1, col));
                     visited[row + 1][col] = true;
                 }
@@ -214,18 +230,39 @@ public class Grid {
     }
 
     public void render(SpriteBatch sb){
-        sb.setColor(bgcolor);
-        sb.draw(tex,
-                x - Cell.PADDING,
-                y - Cell.PADDING,
-                SIZE + Cell.PADDING * 2,
-                SIZE + Cell.PADDING * 2);
 
+        sb.setColor(Color.WHITE);
         for(int row = 0; row < numRows; row++){
             for(int col = 0; col < numCols; col++){
+                sb.draw(bg, x + col * Cell.SIZE, y + row * Cell.SIZE, Cell.SIZE, Cell.SIZE);
+                if((row + col) % 2 == 0) {
+                    sb.setColor(checkeredColor);
+                    sb.draw(pixel, x + col * Cell.SIZE, y + (numRows - row - 1) * Cell.SIZE, Cell.SIZE, Cell.SIZE);
+                    sb.setColor(Color.WHITE);
+                }
+            }
+        }
+        for(int row = 0; row < numRows; row++){
+            for(int col = 0; col < numCols; col++) {
+                if((row + col) % 2 == 0) {
+                    sb.setColor(checkeredColor);
+                    sb.draw(pixel, x + col * Cell.SIZE, y + (numRows - row - 1) * Cell.SIZE, Cell.SIZE, Cell.SIZE);
+                }
                 grid[row][col].render(sb);
             }
         }
     }
 
+    ///////////////////////
+    private int animationCount;
+
+    @Override
+    public void onStarted() {
+        animationCount++;
+    }
+
+    @Override
+    public void onFinished() {
+        animationCount--;
+    }
 }

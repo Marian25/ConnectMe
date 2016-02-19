@@ -3,33 +3,37 @@ package com.distraction.cm.game;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.distraction.cm.util.AnimationListener;
+import com.distraction.cm.util.Content;
 
 public class Cell {
 
-
-
-
     public enum CellType{
-        RED(Color.RED),
-        GREEN(Color.GREEN),
-        BLUE(Color.BLUE);
+        RED(Color.RED, "cell_red"),
+        GREEN(Color.GREEN, "cell_green"),
+        BLUE(Color.BLUE, "cell_blue");
 
         Color color;
-        private CellType(Color color){
+        String name;
+        private CellType(Color color, String name){
             this.color = color;
+            this.name = name;
         }
         public Color getColor(){
             return color;
+        }
+        public String getName(){
+            return name;
         }
     }
 
     public static CellType[] cellTypeValues = CellType.values();
 
     public static int SIZE;
-    public static int PADDING = 10;
+    public static int PADDING;
 
     private CellType cellType;
-    private Texture tex;
 
     private float x;
     private float y;
@@ -38,13 +42,21 @@ public class Cell {
     private float dx;
     private float dy;
 
-    private static float speed = 400;
+    private static float speed = 1000;
+
+    private TextureRegion bg;
+
+    private AnimationListener listener;
 
     public Cell(int type, float x, float y){
+        cellType = cellTypeValues[type];
         this.x = x;
         this.y = y;
-        cellType = cellTypeValues[type];
-        tex = new Texture("pixel.png");
+        bg = Content.getIntance().getAtlas().findRegion(cellType.getName());
+    }
+
+    public void setListener(AnimationListener listener){
+        this.listener = listener;
     }
 
     public void setPosition(float x, float y){
@@ -60,6 +72,7 @@ public class Cell {
         float dist = (float)Math.sqrt(dx * dx + dy * dy);
         dx /= dist;
         dy /= dist;
+        listener.onStarted();
     }
 
     public CellType getType(){
@@ -74,19 +87,27 @@ public class Cell {
     public void update(float dt){
         x += dx * speed * dt;
         y += dy * speed * dt;
-        if((dx < 0 && x <= xdest) || (dx > 0 && x >= xdest)){
+
+        if((dx < 0 && x <= xdest) || (dx > 0 && x >= xdest)) {
             dx = 0;
             x = xdest;
+            if (y == ydest) {
+                listener.onFinished();
+            }
         }
+
         if((dy < 0  && y <= ydest) || (dy > 0 && y >= ydest)){
             dy = 0;
             y = ydest;
+            if(x == xdest){
+                listener.onFinished();
+            }
         }
     }
 
     public void render(SpriteBatch sb){
-        sb.setColor(cellType.getColor());
-        sb.draw(tex,
+        sb.setColor(Color.WHITE);
+        sb.draw(bg,
                 x + PADDING,
                 y + PADDING,
                 SIZE - PADDING * 2,
